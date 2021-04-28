@@ -1,59 +1,84 @@
 #!/usr/bin/env
 
 import requests
+import json
 
-if __name__ == "__main__":
-    url = "http://82.99.215.219:65505/api_jsonrpc.php"
-    payload = {
-            'jsonrpc': '2.0'
-            }
-    counter = 0
+URL = "http://82.99.215.219:65505/api_jsonrpc.php"
 
-    # login
-    payload['method'] = 'user.login'
-    payload['params'] = {
-            'user': 'ali',
-            'password': 'ali@123'
-            }
-    payload['id'] = counter
 
-    response = requests.post(url, json=payload).json()
-    token = response['result']
+class Host:
+    def __init__(self, ip, hostname):
+        self.payload = {}
+        self.payload['jsonrpc'] = '2.0'
+        self.counter = 0
+        self.hostid = ''
+        self.ip = ip
+        self.hostname = hostname
 
-    # search
-    payload['id'] += 1
-    payload['auth'] = token
-    payload['method'] = 'host.get'
-    payload['params'] = {
-            'filter': {
-                'ip': '192.168.1.233'
+        self._login()
+
+    def _login(self):
+        self.payload['method'] = 'user.login'
+        self.payload['params'] = {
+                'user': 'ali',
+                'password': 'ali@123'
                 }
-            }
-    response = requests.post(url, json=payload).json()
+        self.payload['id'] = self.counter
 
-    # add
-    if len(response['result']) == 0:
-        payload['id'] += 1
-        payload['method'] = 'host.create'
-        payload['params'] = {
-                'host': 'mongo_supply',
-                'groups': {'groupid': '2'},
-                'templates': {'templateid': '10001'},
-                'interfaces': {
-                    'type': 1,
-                    'dns': '',
-                    'ip': '192.168.1.233',
-                    'main': 1,
-                    'port': '10050',
-                    'useip': 1
+        response = requests.post(URL, json=self.payload).json()
+        self.payload['auth'] = response['result']
+
+    def write_to_file(self):
+        with open('status.json', 'w') as f:
+            host = self.search()
+            json.dump(host['result'], f)
+
+    def search(self):
+        self.payload['id'] += 1
+        self.payload['method'] = 'host.get'
+        self.payload['params'] = {
+                'filter': {
+                    'ip': self.ip
                     }
                 }
-        response = requests.post(url, json=payload).json()
+        response = requests.post(URL, json=self.payload).json()
+        return response
 
+    def add_one(self):
+        search = self.search()
+        if len(search['result']) == 0:
+            self.payload['id'] += 1
+            self.payload['method'] = 'host.create'
+            self.payload['params'] = {
+                    'host': self.hostname,
+                    'groups': {'groupid': '2'},
+                    'templates': {'templateid': '10001'},
+                    'interfaces': {
+                        'type': 1,
+                        'dns': '',
+                        'ip': self.ip,
+                        'main': 1,
+                        'port': '10050',
+                        'useip': 1
+                        }
+                    }
+            response = requests.post(URL, json=self.payload).json()
+            # print(response)
+            self.hostid = response['result']['hostids'][0]
+
+    def delete(self):
+        search = self.search()
+        if len(search['result']) > 0:
+            self.payload['id'] += 1
+            self.payload['method'] = 'host.delete'
+            self.payload['params'] = ['10420']
+            response = requests.post(URL, json=self.payload).json()
+            return response
+
+
+if __name__ == "__main__":
+    mongo = Host('192.168.1.233', 'mongo_supply')
+    mongo.add_one()
+    mongo.write_to_file()
     # delete
-    if len(response['result']) > 0:
-        payload['id'] += 1
-        payload['method'] = 'host.delete'
-        payload['params'] = ['10418']
-        response = requests.post(url, json=payload).json()
-        print(response)
+    # mongo.delete()
