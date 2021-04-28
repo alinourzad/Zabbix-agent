@@ -1,0 +1,10 @@
+---
+version: "2"
+services:
+    zabbix-agent2:
+        image: registry.pinsvc.net/ops/zabbix-agent2
+        privileged: true
+        environment:
+            - ZBX_SERVER_HOST=192.168.1.241
+            - ZBX_PASSIVESERVERS=192.168.1.241
+        network_mode: host

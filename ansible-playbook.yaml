@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: install python3-pip
+      apt:
+        name: "{{ item }}"
+      loop:
+        - python3-pip
+    - name: install required python modules
+      pip:
+        name: "{{ item }}"
+      loop:
+        - docker
+        - docker-compose
+    - name: create directory
+      file:
+        path: /opt/zabbix-agent2
+        state: directory
+    - name: copy docker-compose file
+      copy:
+        src: docker-compose.yaml
+        dest: /opt/zabbix-agent2/docker-compose.yaml
+    - name: start docker-compose
+      community.docker.docker_compose:
+        project_src: /opt/zabbix-agent2
