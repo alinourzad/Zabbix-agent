@@ -1,7 +1,6 @@
 #!/usr/bin/env
 
 import requests
-import json
 
 URL = "http://82.99.215.219:65505/api_jsonrpc.php"
 
@@ -27,11 +26,6 @@ class Host:
 
         response = requests.post(URL, json=self.payload).json()
         self.payload['auth'] = response['result']
-
-    def write_to_file(self):
-        with open('status.json', 'w') as f:
-            host = self.search()
-            json.dump(host['result'], f)
 
     def search(self):
         self.payload['id'] += 1
@@ -79,6 +73,5 @@ class Host:
 if __name__ == "__main__":
     mongo = Host('192.168.1.233', 'mongo_supply')
     mongo.add_one()
-    mongo.write_to_file()
     # delete
     # mongo.delete()
