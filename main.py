@@ -19,8 +19,8 @@ class Host:
     def _login(self):
         self.payload['method'] = 'user.login'
         self.payload['params'] = {
-                'user': 'ali',
-                'password': 'ali@123'
+                'user': 'username',
+                'password': 'password'
                 }
         self.payload['id'] = self.counter
 
