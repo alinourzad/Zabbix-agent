@@ -11,3 +11,7 @@ TODO
   configuration of it.
 * list of templates and groups to hold theire groupid and templateid.
 * more recommendations are welcome.
+
+# FIX
+
+* delete function dosen't store the hostid. There is no way to store the hostid and use the function
