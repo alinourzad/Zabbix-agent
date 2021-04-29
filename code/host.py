@@ -8,25 +8,25 @@ URL = "http://82.99.215.219:65505/api_jsonrpc.php"
 
 class Host:
     def __init__(self, ip, hostname):
-        path = '.env'
+        self.path = "code/.env"
         self.payload = {}
         self.payload['jsonrpc'] = '2.0'
         self.counter = 0
         self.hostid = ''
         self.ip = ip
         self.hostname = hostname
-        self.options = dotenv.dotenv_values(dotenv_path=path)
 
         self._login()
 
     def _login(self):
         self.payload['method'] = 'user.login'
         self.payload['params'] = {
-                'user': self.options.get("zabbix_username"),
-                'password': self.options.get("zabbix_password")
+                'user': dotenv.get_key(self.path, "zabbix_username"),
+                'password': dotenv.get_key(self.path, "zabbix_password")
                 }
         self.payload['id'] = self.counter
 
+        # print(self.payload)
         response = requests.post(URL, json=self.payload).json()
         self.payload['auth'] = response['result']
 
