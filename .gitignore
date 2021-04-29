@@ -1,3 +1,4 @@
 status.json
 .env
 code/__pycache__
+hosts.yml

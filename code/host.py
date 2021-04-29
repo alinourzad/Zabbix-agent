@@ -71,10 +71,3 @@ class Host:
             self.payload['params'] = ['10420']
             response = requests.post(URL, json=self.payload).json()
             return response
-
-
-if __name__ == "__main__":
-    mongo = Host('192.168.1.233', 'mongo_supply')
-    mongo.add_one()
-    # delete
-    # mongo.delete()
