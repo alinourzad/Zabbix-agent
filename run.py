@@ -9,7 +9,24 @@ from code.host import Host
 # to be able  to work dotenv files we use this package
 import dotenv
 
-if __name__ == "__main__":
+def add_only_one(ip, hostname):
+    host = Host(ip, hostname)
+    host.add_one()
+
+def main():
+    assets = {"elk-m1": "192.168.1.218", "elk-m2": "192.168.1.217",
+            "elk-m3": "192.168.1.216", "elk-d1": "192.168.1.215", 
+            "elk-d2": "192.168.1.214"}
+
+    for i in assets:
+        # print(f"{i} = {assets[i]}")
+        hostname = i
+        ip = assets[i]
+
+        host = Host(ip, hostname)
+        host.add_one()
+
+def meow():
     # get the ip from dotenv file in code/.env
     ip = dotenv.get_key("code/.env", "ip")
     # get the hostname from dotenv file in code/.env
@@ -23,3 +40,9 @@ if __name__ == "__main__":
     # lets try to add/remove/... to the zabbix-server
     mongo = Host(ip, hostname)
     print(mongo.payload)
+
+if __name__ == "__main__":
+    hostname = "elk-m1"
+    ip = "192.168.1.218"
+
+    add_only_one(ip, hostname)
